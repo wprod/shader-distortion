@@ -69,9 +69,7 @@ function ShaderPlane({ textureName }: ShaderPlaneProps) {
 }
 
 export default function App() {
-  const [textureName, setTextureName] = useState<"mont" | "building" | "house">(
-    "house",
-  );
+  const [textureName] = useState<"mont" | "building" | "house">("house");
 
   return (
     <>
