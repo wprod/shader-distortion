@@ -75,29 +75,6 @@ export default function App() {
 
   return (
     <>
-      <div>
-        <button
-          onClick={() => {
-            setTextureName("building");
-          }}
-        >
-          Building
-        </button>
-        <button
-          onClick={() => {
-            setTextureName("mont");
-          }}
-        >
-          Mountain
-        </button>
-        <button
-          onClick={() => {
-            setTextureName("house");
-          }}
-        >
-          House
-        </button>
-      </div>
       <Canvas>
         <ShaderPlane textureName={textureName} />
       </Canvas>
