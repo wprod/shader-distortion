@@ -1,27 +1,30 @@
-import * as THREE from 'three'
-import {extend, ReactThreeFiber} from '@react-three/fiber'
-import { shaderMaterial } from '@react-three/drei'
+import * as THREE from "three";
+import { extend, ReactThreeFiber } from "@react-three/fiber";
+import { shaderMaterial } from "@react-three/drei";
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
-    namespace JSX {
-        interface IntrinsicElements {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            customMaterial: ReactThreeFiber.Object3DNode<CustomMaterial, typeof CustomMaterial>
-        }
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace JSX {
+    interface IntrinsicElements {
+      customMaterial: ReactThreeFiber.Object3DNode<
+        // @ts-ignore
+        CustomMaterial,
+        typeof CustomMaterial
+      >;
     }
+  }
 }
 
 const CustomMaterial = shaderMaterial(
-    {
-        time: 0,
-        resolution: new THREE.Vector2(),
-        pointer: new THREE.Vector2(),
-        source: new THREE.Texture(),
-        mask: new THREE.Texture(),
-    },
-    /*glsl*/ `
+  {
+    time: 0,
+    resolution: new THREE.Vector2(),
+    pointer: new THREE.Vector2(),
+    source: new THREE.Texture(),
+    mask: new THREE.Texture(),
+    videoTexture: null,
+  },
+  /*glsl*/ `
     varying vec2 vUv;
     void main() {
       vec4 modelPosition = modelMatrix * vec4(position, 1.0);
@@ -30,11 +33,12 @@ const CustomMaterial = shaderMaterial(
       gl_Position = projectionPosition;
       vUv = uv;
     }`,
-    /*glsl*/ `
+  /*glsl*/ `
     varying vec2 vUv;
     uniform sampler2D source;
     uniform sampler2D mask;
-    uniform vec2 pointer; // Add this line
+    uniform vec2 pointer; 
+    uniform sampler2D videoTexture;
 
     void main(){
       // Get the color of the pixel at the current position in the heightmap
@@ -44,13 +48,13 @@ const CustomMaterial = shaderMaterial(
       vec2 offset = heightColor.rg * (pointer * 0.05);
 
       // Get the color of the pixel at the offset position in the texture
-      vec4 color = texture2D(source, vUv + offset);
+      vec4 color = texture2D(videoTexture, vUv + offset);
 
       gl_FragColor = color;
     }
-  `
-)
+  `,
+);
 
-extend({ CustomMaterial })
+extend({ CustomMaterial });
 
-export { CustomMaterial }
+export { CustomMaterial };
