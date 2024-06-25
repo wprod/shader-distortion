@@ -5,7 +5,11 @@ import * as THREE from "three";
 import { easing } from "maath";
 import { TextureLoader } from "three";
 
-function ShaderPlane() {
+interface ShaderPlaneProps {
+  textureName: "mont" | "building";
+}
+
+function ShaderPlane({ textureName }: ShaderPlaneProps) {
   const ref = useRef({
     time: 0,
     resolution: new THREE.Vector3(),
@@ -13,9 +17,9 @@ function ShaderPlane() {
   });
   const { viewport, size } = useThree();
 
-  const [video] = useState(() =>
+  const [video, setVideo] = useState(() =>
     Object.assign(document.createElement("video"), {
-      src: "/building.mp4",
+      src: `/${textureName}.mp4`,
       crossOrigin: "Anonymous",
       loop: true,
       muted: true,
@@ -25,6 +29,17 @@ function ShaderPlane() {
   const videoTexture = new THREE.VideoTexture(video);
 
   useEffect(() => void video.play(), [video]);
+
+  useEffect(() => {
+    setVideo(
+      Object.assign(document.createElement("video"), {
+        src: `/${textureName}.mp4`,
+        crossOrigin: "Anonymous",
+        loop: true,
+        muted: true,
+      }),
+    );
+  }, [textureName]);
 
   useFrame((state, delta) => {
     ref.current.time += delta;
@@ -37,9 +52,8 @@ function ShaderPlane() {
   });
 
   const texture = useLoader(TextureLoader, "/building.jpg");
-  const mask = useLoader(TextureLoader, "./building-depth.png");
+  const mask = useLoader(TextureLoader, `./${textureName}-depth.png`);
 
-  console.log(texture);
   return (
     <mesh scale={[viewport.width, viewport.height, 1]}>
       <planeGeometry />
@@ -56,9 +70,29 @@ function ShaderPlane() {
 }
 
 export default function App() {
+  const [textureName, setTextureName] = useState<"mont" | "building">("mont");
+
   return (
-    <Canvas>
-      <ShaderPlane />
-    </Canvas>
+    <>
+      <div>
+        <button
+          onClick={() => {
+            setTextureName("building");
+          }}
+        >
+          Building
+        </button>
+        <button
+          onClick={() => {
+            setTextureName("mont");
+          }}
+        >
+          Mountain
+        </button>
+      </div>
+      <Canvas>
+        <ShaderPlane textureName={textureName} />
+      </Canvas>
+    </>
   );
 }
