@@ -48,7 +48,7 @@ const CustomMaterial = shaderMaterial(
       vec4 depth = texture2D(videoTexture, vec2(vUv.x, vUv.y * 0.5));
     
       // Use the depth to calculate an offset for the color sampling
-      vec2 offset = depth.r * 2. * (pointer * 0.025);
+      vec2 offset = depth.r * (pointer * 0.025);
     
       // Sample the color again with the offset
       vec4 offsetColor = texture2D(videoTexture, vec2(vUv.x, vUv.y * 0.5 + 0.5) + offset);
