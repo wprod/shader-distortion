@@ -41,17 +41,21 @@ const CustomMaterial = shaderMaterial(
     uniform sampler2D videoTexture;
 
     void main(){
-      // Get the color of the pixel at the current position in the heightmap
-      vec4 heightColor = texture2D(mask, vUv);
-
-      // Calculate the offset based on the color values from the heightmap
-      vec2 offset = heightColor.rg * (pointer * 0.05);
-
-      // Get the color of the pixel at the offset position in the texture
-      vec4 color = texture2D(videoTexture, vUv + offset);
-
-      gl_FragColor = color;
-    }
+      // Sample the color from the upper part of the texture
+      vec4 color = texture2D(videoTexture, vec2(vUv.x, vUv.y * 0.5 + 0.5));
+    
+      // Sample the depth from the lower part of the texture
+      vec4 depth = texture2D(videoTexture, vec2(vUv.x, vUv.y * 0.5));
+    
+      // Use the depth to calculate an offset for the color sampling
+      vec2 offset = depth.r * 2. * (pointer * 0.025);
+    
+      // Sample the color again with the offset
+      vec4 offsetColor = texture2D(videoTexture, vec2(vUv.x, vUv.y * 0.5 + 0.5) + offset);
+    
+      // Use the offset color as the output color
+      gl_FragColor = offsetColor;
+}
   `,
 );
 

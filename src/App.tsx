@@ -6,7 +6,7 @@ import { easing } from "maath";
 import { TextureLoader } from "three";
 
 interface ShaderPlaneProps {
-  textureName: "mont" | "building";
+  textureName: string;
 }
 
 function ShaderPlane({ textureName }: ShaderPlaneProps) {
@@ -52,14 +52,13 @@ function ShaderPlane({ textureName }: ShaderPlaneProps) {
   });
 
   const texture = useLoader(TextureLoader, "/building.jpg");
-  const mask = useLoader(TextureLoader, `./${textureName}-depth.png`);
+  // const mask = useLoader(TextureLoader, `./${textureName}-depth.png`);
 
   return (
     <mesh scale={[viewport.width, viewport.height, 1]}>
       <planeGeometry />
       <customMaterial
         ref={ref}
-        mask={mask}
         source={texture}
         videoTexture={videoTexture}
         key={CustomMaterial.key}
@@ -70,7 +69,9 @@ function ShaderPlane({ textureName }: ShaderPlaneProps) {
 }
 
 export default function App() {
-  const [textureName, setTextureName] = useState<"mont" | "building">("mont");
+  const [textureName, setTextureName] = useState<"mont" | "building" | "house">(
+    "house",
+  );
 
   return (
     <>
@@ -88,6 +89,13 @@ export default function App() {
           }}
         >
           Mountain
+        </button>
+        <button
+          onClick={() => {
+            setTextureName("house");
+          }}
+        >
+          House
         </button>
       </div>
       <Canvas>
